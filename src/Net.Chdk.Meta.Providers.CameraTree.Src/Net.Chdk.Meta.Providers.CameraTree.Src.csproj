@@ -79,6 +79,10 @@
       <Project>{7DFA900F-4AAB-4268-90D8-20A8FF3B40A7}</Project>
       <Name>Net.Chdk.Meta.Providers.CameraTree.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Net.Chdk.Meta.Providers.Core\src\Net.Chdk.Meta.Providers.Core\Net.Chdk.Meta.Providers.Core.csproj">
+      <Project>{a336d62c-4caf-4b19-9602-8ce0e51b4eb4}</Project>
+      <Name>Net.Chdk.Meta.Providers.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
