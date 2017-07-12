@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Net.Chdk.Meta.Providers.CameraTree.Src
 {
-    sealed class SrcCameraTreeProvider : ICameraTreeProvider
+    sealed class SrcCameraTreeProvider : IInnerCameraTreeProvider
     {
         private PlatformProvider PlatformProvider { get; }
 
@@ -14,6 +14,8 @@ namespace Net.Chdk.Meta.Providers.CameraTree.Src
         {
             PlatformProvider = platformProvider;
         }
+
+        public string Extension => "";
 
         public IDictionary<string, TreePlatformData> GetCameraTree(string path)
         {
