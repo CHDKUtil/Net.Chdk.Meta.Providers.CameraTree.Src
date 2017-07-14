@@ -22,7 +22,7 @@ namespace Net.Chdk.Meta.Providers.CameraTree.Src
             var platformPath = Path.Combine(path, "platform");
             return Directory.EnumerateDirectories(platformPath)
                 .Select(Path.GetFileName)
-                .Where(platform => !"generic".Equals(platform, StringComparison.InvariantCulture))
+                .Where(platform => !"generic".Equals(platform, StringComparison.Ordinal))
                 .ToDictionary(platform => platform, platform => GetPlatform(platformPath, platform));
         }
 
