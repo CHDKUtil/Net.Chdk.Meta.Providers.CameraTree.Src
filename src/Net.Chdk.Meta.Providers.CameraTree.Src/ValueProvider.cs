@@ -16,14 +16,7 @@ namespace Net.Chdk.Meta.Providers.CameraTree.Src
         protected string GetFilePath(string platformPath, string platform, string revision)
         {
             var path = GetPath(platformPath, platform, revision);
-            var filePath = Path.Combine(path, FileName);
-            if (!File.Exists(filePath))
-            {
-                var name = GetName(platform, revision);
-                throw new InvalidOperationException($"{name}: {FileName} missing");
-            }
-
-            return filePath;
+            return Path.Combine(path, FileName);
         }
 
         protected string GetPath(string platformPath, string platform, string revision)
