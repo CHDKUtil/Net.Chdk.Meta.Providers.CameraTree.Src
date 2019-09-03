@@ -9,6 +9,7 @@ namespace Net.Chdk.Meta.Providers.CameraTree.Src
             return serviceCollection
                 .AddSingleton<IInnerCameraTreeProvider, SrcCameraTreeProvider>()
                 .AddSingleton<SourceProvider>()
+                .AddSingleton<IdProvider>()
                 .AddSingleton<EncodingProvider>()
                 .AddSingleton<PlatformProvider>()
                 .AddSingleton<CameraProvider>()

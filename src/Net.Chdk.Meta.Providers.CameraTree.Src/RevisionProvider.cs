@@ -7,11 +7,13 @@ namespace Net.Chdk.Meta.Providers.CameraTree.Src
     {
         private ILogger Logger { get; }
         private SourceProvider SourceProvider { get; }
+        private IdProvider IdProvider { get; }
         private EncodingProvider EncodingProvider { get; }
 
-        public RevisionProvider(SourceProvider sourceProvider, EncodingProvider encodingProvider, ILogger<RevisionProvider> logger)
+        public RevisionProvider(SourceProvider sourceProvider, IdProvider idProvider, EncodingProvider encodingProvider, ILogger<RevisionProvider> logger)
         {
             SourceProvider = sourceProvider;
+            IdProvider = idProvider;
             EncodingProvider = encodingProvider;
             Logger = logger;
         }
@@ -26,6 +28,10 @@ namespace Net.Chdk.Meta.Providers.CameraTree.Src
             if (!sourcePlatform.Equals(platform) || !sourceRevision.Equals(revision))
                 Logger.LogTrace("Source: {0}-{1}", sourcePlatform, sourceRevision);
 
+            var id = GetId(platformPath, sourcePlatform, sourceRevision);
+            if (id != null)
+                Logger.LogTrace("ID: {0}", id.Id);
+
             var encoding = GetEncoding(platformPath, sourcePlatform, sourceRevision);
             if (encoding != null)
                 Logger.LogTrace("Encoding: {0}", encoding.Version);
@@ -33,6 +39,7 @@ namespace Net.Chdk.Meta.Providers.CameraTree.Src
             var revisionData = new TreeRevisionData
             {
                 Source = source,
+                Id = id,
                 Encoding = encoding,
             };
 
@@ -43,6 +50,11 @@ namespace Net.Chdk.Meta.Providers.CameraTree.Src
         private TreeSourceData GetSource(string platformPath, string platform, string revision)
         {
             return SourceProvider.GetSource(platformPath, platform, revision);
+        }
+
+        private TreeIdData GetId(string platformPath, string platform, string revision)
+        {
+            return IdProvider.GetId(platformPath, platform, revision);
         }
 
         private TreeEncodingData GetEncoding(string platformPath, string platform, string revision)

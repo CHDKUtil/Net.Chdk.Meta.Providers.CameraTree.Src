@@ -11,12 +11,14 @@ namespace Net.Chdk.Meta.Providers.CameraTree.Src
     {
         private ILogger Logger { get; }
         private RevisionProvider RevisionProvider { get; }
+        private IdProvider IdProvider { get; }
         private EncodingProvider EncodingProvider { get; }
         private CameraProvider CameraProvider { get; }
 
-        public PlatformProvider(RevisionProvider revisionProvider, EncodingProvider encodingProvider, CameraProvider cameraProvider, ILogger<PlatformProvider> logger)
+        public PlatformProvider(RevisionProvider revisionProvider, IdProvider idProvider, EncodingProvider encodingProvider, CameraProvider cameraProvider, ILogger<PlatformProvider> logger)
         {
             RevisionProvider = revisionProvider;
+            IdProvider = idProvider;
             EncodingProvider = encodingProvider;
             CameraProvider = cameraProvider;
             Logger = logger;
@@ -28,12 +30,14 @@ namespace Net.Chdk.Meta.Providers.CameraTree.Src
 
             var revisions = GetRevisions(platformPath, platform);
             var sourcePlatform = GetSourcePlatform(revisions, platform);
+            var id = GetId(platformPath, sourcePlatform, platform, revisions);
             var encoding = GetEncoding(platformPath, sourcePlatform, platform, revisions);
             var camera = GetCamera(platformPath, sourcePlatform ?? platform);
 
             var platformData = new TreePlatformData
             {
                 Revisions = revisions,
+                Id = id,
                 Encoding = encoding,
                 Alt = GetAlt(camera),
                 Card = GetCard(camera),
@@ -74,6 +78,30 @@ namespace Net.Chdk.Meta.Providers.CameraTree.Src
             return camera != null
                 ? camera.Alt
                 : new TreeAltData();
+        }
+
+        private TreeIdData GetId(string platformPath, string sourcePlatform, string platform, IDictionary<string, TreeRevisionData> revisions)
+        {
+            return GetPlatformId(platformPath, sourcePlatform, platform)
+                ?? GetRevisionId(revisions, platform);
+        }
+
+        private TreeIdData GetPlatformId(string platformPath, string sourcePlatform, string platform)
+        {
+            return IdProvider.GetId(platformPath, sourcePlatform ?? platform);
+        }
+
+        private TreeIdData GetRevisionId(IDictionary<string, TreeRevisionData> revisions, string platform)
+        {
+            var ids = revisions
+                .Select(kvp => kvp.Value.Id)
+                .Where(i => i != null);
+            var id = ids.FirstOrDefault();
+            if (id == null)
+                throw new InvalidOperationException($"{platform}: Missing ID");
+            if (ids.Any(i => !Equals(i.Id, id?.Id)))
+                throw new InvalidOperationException($"{platform}: Mismatching IDs");
+            return id;
         }
 
         private static TreeCardData GetCard(CameraData camera)
